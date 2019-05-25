@@ -47,7 +47,7 @@
     <repositories>
         <repository>
             <id>datanucleus</id>
-            <url>https://mvnrepository.com/artifact/com.oracle/ojdbc7</url>
+            <url>http://maven.icm.edu.pl/artifactory/repo/</url>
         </repository>
     </repositories>
 
