@@ -35,13 +35,12 @@
             <version>1.11.3</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.oracle/ojdbc7 -->
+        <!-- https://mvnrepository.com/artifact/ojdbc/ojdbc -->
         <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc7</artifactId>
-            <version>12.1.0.2</version>
+            <groupId>ojdbc</groupId>
+            <artifactId>ojdbc</artifactId>
+            <version>14</version>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -57,32 +56,6 @@
                         <goals><goal>copy-dependencies</goal></goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <webResources>
-                        <resource>
-                            <directory>${basedir}/src/main/java</directory>
-                            <targetPath>WEB-INF/classes</targetPath>
-                            <includes>
-                                <include>**/*.properties</include>
-                                <include>**/*.xml</include>
-                                <include>**/*.css</include>
-                                <include>**/*.html</include>
-                            </includes>
-                        </resource>
-                        <resource>
-                            <directory>${basedir}/lib</directory>
-                            <targetPath>WEB-INF/lib</targetPath>
-                            <includes>
-                                <include>**/*.jar</include>
-                            </includes>
-                        </resource>
-                    </webResources>
-                </configuration>
             </plugin>
         </plugins>
     </build>
