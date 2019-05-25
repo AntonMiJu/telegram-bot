@@ -35,12 +35,13 @@
             <version>1.11.3</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/ojdbc/ojdbc -->
+        <!-- https://mvnrepository.com/artifact/com.oracle/ojdbc7 -->
         <dependency>
-            <groupId>ojdbc</groupId>
-            <artifactId>ojdbc</artifactId>
-            <version>14</version>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc7</artifactId>
+            <version>12.1.0.2</version>
         </dependency>
+
     </dependencies>
 
     <build>
