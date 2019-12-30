@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Bot extends TelegramLongPollingBot {
-    private CurrencyDAO currencyDAO = new CurrencyDAO();
+    private CurrencyDAO currencyDAO;
 
     /**
      * Метод для приема сообщений.
@@ -48,7 +48,7 @@ public class Bot extends TelegramLongPollingBot {
 
     private SendMessage getRates(SendMessage message) {
         String messageText = "Goverla rate for today: \n";
-        for (Currency el : currencyDAO.getRate()) {
+        for (Currency el : getCurrencyDAO().getAll()) {
             messageText += el.toString()+" \n";
         }
         message.setText(messageText);
@@ -73,6 +73,12 @@ public class Bot extends TelegramLongPollingBot {
         replyKeyboardMarkup.setKeyboard(keyboard);
 
         return replyKeyboardMarkup;
+    }
+
+    public CurrencyDAO getCurrencyDAO(){
+        if (currencyDAO == null)
+            currencyDAO = new CurrencyDAO();
+        return currencyDAO;
     }
 
     /**

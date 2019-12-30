@@ -5,6 +5,7 @@ import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
+import objects.Currency;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -14,7 +15,7 @@ import java.util.regex.Pattern;
 public class GoverlaCrawler extends WebCrawler {
     private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|gif|jpg"
             + "|png|mp3|mp4|zip|gz))$");
-    private static CurrencyDAO currencyDAO = new CurrencyDAO();
+    private static CurrencyDAO currencyDAO;
 
     /**
      * This method receives two parameters. The first parameter is the page
@@ -45,9 +46,17 @@ public class GoverlaCrawler extends WebCrawler {
             Elements ask = elements.select("div.gvrl-table-cell.ask");
 
             for (int i = 0; i < names.toArray().length; i++) {
-//                System.out.println(names.get(i).attr("alt"));
-                currencyDAO.save(names.get(i).attr("title"),bid.get(i).text(),ask.get(i).text());
+                Currency currentCurrency = getCurrencyDAO().getByName(names.get(i).attr("title"));
+                currentCurrency.setAsk(bid.get(i).text());
+                currentCurrency.setBid(ask.get(i).text());
+                getCurrencyDAO().update(currentCurrency);
             }
         }
+    }
+
+    public static CurrencyDAO getCurrencyDAO(){
+        if (currencyDAO == null)
+            currencyDAO = new CurrencyDAO();
+        return currencyDAO;
     }
 }
