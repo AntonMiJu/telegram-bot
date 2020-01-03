@@ -1,45 +1,73 @@
-package database;
+package com.database;
 
-import objects.Currency;
+import com.objects.Currency;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.persistence.*;
+import javax.transaction.Transaction;
 import java.util.List;
 
 public class CurrencyDAO {
     private static final String getAll = "SELECT * FROM CURRENCY;";
     private static final String getByName = "SELECT * FROM CURRENCY WHERE CURRENCY = :name ;";
 
-    @PersistenceContext
+    private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
 
     public List<Currency> getAll() {
-        return entityManager.createNativeQuery(getAll, Currency.class)
+        return getEntityManager().createNativeQuery(getAll, Currency.class)
                 .getResultList();
     }
 
     public Currency getByName(String name) {
-        return (Currency) entityManager.createNativeQuery(getByName, Currency.class)
-                .setParameter("name", name)
-                .getSingleResult();
+        try {
+            return (Currency) getEntityManager().createNativeQuery(getByName, Currency.class)
+                    .setParameter("name", name)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            System.out.println("Not found currency " + name);
+        }
+        return null;
     }
 
     public Currency get(Long id) {
-        return entityManager.find(Currency.class, id);
+        return getEntityManager().find(Currency.class, id);
     }
 
-    public Currency save(Currency currency) {
-        entityManager.persist(currency);
-        return currency;
+    public void save(Currency currency) {
+        EntityTransaction tr = entityManager.getTransaction();
+
+        tr.begin();
+        getEntityManager().persist(currency);
+        tr.commit();
     }
 
-    public Currency update(Currency currency) {
-        return entityManager.merge(currency);
+    public void update(Currency currency) {
+        EntityTransaction tr = entityManager.getTransaction();
+
+        tr.begin();
+        getEntityManager().merge(currency);
+        tr.commit();
     }
 
     public void delete(Long id) {
-        Currency currency = entityManager.find(Currency.class, id);
-        entityManager.remove(currency);
+        Currency currency = getEntityManager().find(Currency.class, id);
+        EntityTransaction tr = entityManager.getTransaction();
+
+        tr.begin();
+        getEntityManager().remove(currency);
+        tr.commit();
+    }
+
+    private EntityManagerFactory getEntityManagerFactory() {
+        if (entityManagerFactory == null)
+            entityManagerFactory = Persistence.createEntityManagerFactory("entity-manager");
+        return entityManagerFactory;
+    }
+
+    private EntityManager getEntityManager() {
+        if (entityManager == null)
+            entityManager = getEntityManagerFactory().createEntityManager();
+        return entityManager;
     }
 
 

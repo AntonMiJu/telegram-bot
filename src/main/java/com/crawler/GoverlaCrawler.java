@@ -1,15 +1,18 @@
-package crawler;
+package com.crawler;
 
-import database.CurrencyDAO;
+import com.database.CurrencyDAO;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
-import objects.Currency;
+import com.objects.Currency;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class GoverlaCrawler extends WebCrawler {
@@ -22,7 +25,7 @@ public class GoverlaCrawler extends WebCrawler {
      * in which we have discovered this new url and the second parameter is
      * the new url. You should implement this function to specify whether
      * the given url should be crawled or not (based on your crawling logic).
-     * In this example, we are instructing the crawler to ignore urls that
+     * In this example, we are instructing the com.crawler to ignore urls that
      * have css, js, git, ... extensions and to only accept urls that start
      * with "https://goverla.ua/". In this case, we didn't need the
      * referringPage parameter to make the decision.
@@ -40,18 +43,34 @@ public class GoverlaCrawler extends WebCrawler {
         if (page.getParseData() instanceof HtmlParseData) {
             HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
             Document doc = Jsoup.parse(htmlParseData.getHtml());
-            Elements elements = doc.select("div.gvrl-table-body");
-            Elements names = elements.select("div.gvrl-table-cell").select("img[alt]");
-            Elements bid = elements.select("div.gvrl-table-cell.bid");
-            Elements ask = elements.select("div.gvrl-table-cell.ask");
+            Elements allElements = doc.select("div.gvrl-table-body");
 
-            for (int i = 0; i < names.toArray().length; i++) {
-                Currency currentCurrency = getCurrencyDAO().getByName(names.get(i).attr("title"));
-                currentCurrency.setAsk(bid.get(i).text());
-                currentCurrency.setBid(ask.get(i).text());
-                getCurrencyDAO().update(currentCurrency);
-            }
+            saveCurrencyRate(getNames(allElements), getBids(allElements), getAsks(allElements));
         }
+    }
+
+    private void saveCurrencyRate(Elements names, Elements bid, Elements ask){
+        for (int i = 0; i < names.toArray().length; i++) {
+            if (getCurrencyDAO().getByName(names.get(i).attr("title")) == null)
+                continue;
+            Currency currentCurrency = getCurrencyDAO().getByName(names.get(i).attr("title"));
+            currentCurrency.setAsk(Integer.valueOf(ask.get(i).text()));
+            currentCurrency.setBid(Integer.valueOf(bid.get(i).text()));
+            System.out.println(currentCurrency.toString());
+            getCurrencyDAO().update(currentCurrency);
+        }
+    }
+
+    private Elements getNames(Elements allElements){
+        return allElements.select("div.gvrl-table-cell").select("img[alt]");
+    }
+
+    private Elements getBids(Elements allElements){
+        return allElements.select("div.gvrl-table-cell.bid");
+    }
+
+    private Elements getAsks(Elements allElements){
+        return allElements.select("div.gvrl-table-cell.ask");
     }
 
     public static CurrencyDAO getCurrencyDAO(){

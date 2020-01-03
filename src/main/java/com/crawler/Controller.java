@@ -1,4 +1,4 @@
-package crawler;
+package com.crawler;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
@@ -24,7 +24,7 @@ public class Controller {
         CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
 
         // For each crawl, you need to add some seed urls. These are the first
-        // URLs that are fetched and then the crawler starts following links
+        // URLs that are fetched and then the com.crawler starts following links
         // which are found in these pages
         controller.addSeed("https://goverla.ua/");
 

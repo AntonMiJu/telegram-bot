@@ -1,6 +1,5 @@
-package objects;
+package com.objects;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,19 +13,24 @@ import javax.persistence.Table;
 @Getter
 @Setter
 public class Currency {
+    private static final String increaseEmoji = "\uD83D\uDCC8";
+    private static final String decreaseEmoji = "\uD83D\uDCC9";
+
     @Id
     @Column(name = "ID")
     private Long id;
+    @Column(name = "CURRENCY_EMOJI")
+    private String currencyEmojiCode;
     @Column(name = "CURRENCY")
     private String currency;
     @Column(name = "BID")
-    private String bid;
+    private Integer bid;
     @Column(name = "ASK")
-    private String ask;
+    private Integer ask;
 
     @Override
     public String toString() {
-        return currency + ": \n" +
+        return currencyEmojiCode + currency + currencyEmojiCode + ": \n" +
                 "bid - " + bid + " " +
                 "ask - " + ask;
     }
