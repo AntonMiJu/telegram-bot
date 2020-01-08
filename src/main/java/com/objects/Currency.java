@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "CURRENCY")
@@ -25,13 +26,26 @@ public class Currency {
     private String currency;
     @Column(name = "BID")
     private Integer bid;
+    @Column(name = "BID_DIFFERENCE")
+    private Integer bidDifference;
     @Column(name = "ASK")
     private Integer ask;
+    @Column(name = "ASK_DIFFERENCE")
+    private Integer askDifference;
+    @Column(name = "UPDATE_DATE")
+    private LocalDate lastUpdateDate;
 
     @Override
     public String toString() {
         return currencyEmojiCode + currency + currencyEmojiCode + ": \n" +
-                "bid - " + bid + " " +
-                "ask - " + ask;
+                "bid - " + bid + " (" + getEmoji(bidDifference) + " " + bidDifference + ") \n" +
+                "ask - " + ask + " (" + getEmoji(askDifference) + " " + askDifference + ") \n";
+    }
+
+    private String getEmoji(Integer difference) {
+        if (difference > 0)
+            return increaseEmoji;
+        else
+            return decreaseEmoji;
     }
 }

@@ -10,9 +10,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.time.LocalDate;
 import java.util.regex.Pattern;
 
 public class GoverlaCrawler extends WebCrawler {
@@ -49,31 +47,50 @@ public class GoverlaCrawler extends WebCrawler {
         }
     }
 
-    private void saveCurrencyRate(Elements names, Elements bid, Elements ask){
+    private void saveCurrencyRate(Elements names, Elements bid, Elements ask) {
         for (int i = 0; i < names.toArray().length; i++) {
-            if (getCurrencyDAO().getByName(names.get(i).attr("title")) == null)
-                continue;
             Currency currentCurrency = getCurrencyDAO().getByName(names.get(i).attr("title"));
-            currentCurrency.setAsk(Integer.valueOf(ask.get(i).text()));
+            if (currentCurrency == null)
+                continue;
+
+            setDifference(currentCurrency, Integer.valueOf(bid.get(i).text()), Integer.valueOf(ask.get(i).text()));
             currentCurrency.setBid(Integer.valueOf(bid.get(i).text()));
+            currentCurrency.setAsk(Integer.valueOf(ask.get(i).text()));
+
             System.out.println(currentCurrency.toString());
+
             getCurrencyDAO().update(currentCurrency);
         }
     }
 
-    private Elements getNames(Elements allElements){
+    private void setDifference(Currency currency, Integer bid, Integer ask) {
+        if ((currency.getBid()-bid==0) && (currency.getAsk()-ask==0))
+            return;
+
+        if (currency.getLastUpdateDate().getDayOfMonth() == LocalDate.now().getDayOfMonth()) {
+            currency.setBidDifference(currency.getBidDifference() + (bid-currency.getBid()));
+            currency.setAskDifference(currency.getAskDifference() + (ask-currency.getAsk()));
+        } else {
+            currency.setBidDifference(bid-currency.getBid());
+            currency.setAskDifference(ask-currency.getAsk());
+        }
+
+        currency.setLastUpdateDate(LocalDate.now());
+    }
+
+    private Elements getNames(Elements allElements) {
         return allElements.select("div.gvrl-table-cell").select("img[alt]");
     }
 
-    private Elements getBids(Elements allElements){
+    private Elements getBids(Elements allElements) {
         return allElements.select("div.gvrl-table-cell.bid");
     }
 
-    private Elements getAsks(Elements allElements){
+    private Elements getAsks(Elements allElements) {
         return allElements.select("div.gvrl-table-cell.ask");
     }
 
-    public static CurrencyDAO getCurrencyDAO(){
+    public static CurrencyDAO getCurrencyDAO() {
         if (currencyDAO == null)
             currencyDAO = new CurrencyDAO();
         return currencyDAO;

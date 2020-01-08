@@ -3,11 +3,10 @@ package com.database;
 import com.objects.Currency;
 
 import javax.persistence.*;
-import javax.transaction.Transaction;
 import java.util.List;
 
 public class CurrencyDAO {
-    private static final String getAll = "SELECT * FROM CURRENCY;";
+    private static final String getAll = "SELECT * FROM CURRENCY ORDER BY ID;";
     private static final String getByName = "SELECT * FROM CURRENCY WHERE CURRENCY = :name ;";
 
     private EntityManagerFactory entityManagerFactory;
@@ -70,6 +69,9 @@ public class CurrencyDAO {
         return entityManager;
     }
 
+    /**
+     * below is pure way to connect with DB without any frameworks
+     */
 
 //    public void save(String currency, String bid, String ask) {
 //        try (Connection connection = getConnection()) {
@@ -86,7 +88,6 @@ public class CurrencyDAO {
 //            e.printStackTrace();
 //        }
 //    }
-
 //    public List<Currency> getRate(){
 //        try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
 //            ResultSet resultSet = statement.executeQuery("SELECT CURRENCY, BID, ASK FROM GOVERLA");
