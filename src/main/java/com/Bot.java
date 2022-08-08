@@ -15,12 +15,6 @@ import java.util.List;
 public class Bot extends TelegramLongPollingBot {
     private CurrencyDAO currencyDAO;
 
-    /**
-     * Метод для приема сообщений.
-     *
-     * @param update Содержит сообщение от пользователя.
-     */
-
     public void onUpdateReceived(Update update) {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
@@ -44,16 +38,14 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private SendMessage getStartMessage(SendMessage message) {
-        message.setText("HI, welcome to rate bot, choose action from keyboard.");
+        message.setText("Hi, welcome to rate bot, choose action from keyboard.");
         return message;
     }
 
     private SendMessage getRates(SendMessage message) {
-        String messageText = "Goverla rate for today: \n";
-        for (Currency el : getCurrencyDAO().getAll()) {
-            messageText += el.toString()+" \n";
-        }
-        message.setText(messageText);
+        StringBuilder messageText = new StringBuilder("Goverla rate for today: ");
+        getCurrencyDAO().getAll().forEach(el -> messageText.append(System.lineSeparator()).append(el.toString()));
+        message.setText(messageText.toString());
         return message;
     }
 
@@ -83,24 +75,11 @@ public class Bot extends TelegramLongPollingBot {
         return currencyDAO;
     }
 
-    /**
-     * Метод возвращает имя бота, указанное при регистрации.
-     *
-     * @return имя бота
-     */
-
     public String getBotUsername() {
-        return System.getenv("username");
+        return System.getenv("BOT_USERNAME");
     }
 
-
-    /**
-     * Метод возвращает token бота для связи с сервером Telegram
-     *
-     * @return token для бота
-     */
-
     public String getBotToken() {
-        return System.getenv("token");
+        return System.getenv("BOT_TOKEN");
     }
 }
